@@ -43,6 +43,8 @@ export default function App() {
             <Route path="/admin/combos" element={<Combos />} />
           </Route>
         </Route>
+        {/* Catch-all: redirect unknown paths to /login */}
+        <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </BrowserRouter>
   )

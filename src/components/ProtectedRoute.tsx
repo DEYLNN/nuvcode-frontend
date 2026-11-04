@@ -1,4 +1,4 @@
-import { getToken } from '../api/client'
+import { isTokenValid, clearToken } from '../api/client'
 import { useState, useEffect } from 'react'
 import { Navigate, Outlet } from 'react-router-dom'
 
@@ -7,25 +7,10 @@ export default function ProtectedRoute() {
   const [valid, setValid] = useState(false)
 
   useEffect(() => {
-    const token = getToken()
-    if (!token) {
+    if (!isTokenValid()) {
+      clearToken()
       setValid(false)
-      setChecking(false)
-      return
-    }
-
-    // Verify token expiry client-side (JWT payload is base64)
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1]))
-      const exp = payload.exp * 1000
-      if (Date.now() >= exp) {
-        localStorage.removeItem('token')
-        setValid(false)
-      } else {
-        setValid(true)
-      }
-    } catch {
-      // If can't parse, assume valid — backend will reject
+    } else {
       setValid(true)
     }
     setChecking(false)

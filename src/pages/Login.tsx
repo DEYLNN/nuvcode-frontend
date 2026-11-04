@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { API_BASE } from '../api/client'
+import { API_BASE, isTokenValid } from '../api/client'
 import { useNavigate } from 'react-router-dom'
 
 export default function Login() {
@@ -9,9 +9,9 @@ export default function Login() {
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
 
-  // Already logged in? redirect via effect, not render-time Navigate
+  // Redirect only if token is actually valid (not expired)
   useEffect(() => {
-    if (localStorage.getItem('token')) {
+    if (isTokenValid()) {
       navigate('/admin', { replace: true })
     }
   }, [navigate])

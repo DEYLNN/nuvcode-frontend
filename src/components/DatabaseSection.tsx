@@ -20,7 +20,7 @@ export default function DatabaseSection({ dbInfo, stats, onDbReload }: Props) {
       const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
-      a.href = url; a.download = `axumrouter-backup-${new Date().toISOString().slice(0, 10)}.json`
+      a.href = url; a.download = `nuvcode-backup-${new Date().toISOString().slice(0, 10)}.json`
       a.click(); URL.revokeObjectURL(url)
     } catch { /* noop */ }
     setExporting(false)
@@ -45,7 +45,7 @@ export default function DatabaseSection({ dbInfo, stats, onDbReload }: Props) {
         <h2 className="heading-brutal text-lg uppercase tracking-tight">DATABASE</h2>
       </div>
       <div className="p-5 text-sm space-y-3">
-        <div className="text-sm font-medium text-ink/80">sqlite:data/axumrouter.db</div>
+        <div className="text-sm font-medium text-ink/80">sqlite:data/nuvcode.db</div>
         {dbInfo && (
           <div className="space-y-1.5">
             <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-subtext">
