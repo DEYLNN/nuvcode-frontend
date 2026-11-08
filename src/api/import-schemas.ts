@@ -25,6 +25,22 @@ const SCHEMAS: Record<SchemaKey, ImportField[] | string> = {
   'bb:apikey': 'ocf:apikey',
   'orc:ocf': 'ocf:apikey',
 
+  // ── Remaining API-key providers (simple Bearer token, same shape) ──
+  'agr:apikey': 'ocf:apikey',
+  'ags:apikey': 'ocf:apikey',
+  'ant:apikey': 'ocf:apikey',
+  'bai:apikey': 'ocf:apikey',
+  'hcn:apikey': 'ocf:apikey',
+  'inf:apikey': 'ocf:apikey',
+  'kio:apikey': 'ocf:apikey',
+  'nos:apikey': 'ocf:apikey',
+  'nut:apikey': 'ocf:apikey',
+  'sono:apikey': 'ocf:apikey',
+  'sop:apikey': 'ocf:apikey',
+  'three:apikey': 'ocf:apikey',
+  'verb:apikey': 'ocf:apikey',
+  'zb:apikey': 'ocf:apikey',
+
   // ── Manual providers (structured JSON key) ──
   'cf:apikey': [
     { key: 'provider_id', label: 'Provider ID', required: true },
@@ -58,6 +74,8 @@ const SCHEMAS: Record<SchemaKey, ImportField[] | string> = {
     { key: 'refresh_token', label: 'Refresh Token', required: false },
     { key: 'expires_at', label: 'Expires At (epoch)', required: false },
   ],
+  // Codex (auth.openai.com) — access_token + refresh_token (offline_access scope)
+  'cx:oauth': 'gb:oauth',
 }
 
 /** Resolve schema: follow alias strings, return ImportField[] or null if unknown */
