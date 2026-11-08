@@ -31,6 +31,7 @@ export default function Combos() {
   const [showPicker, setShowPicker] = useState(false)
   const [modelSearch, setModelSearch] = useState('')
   const [editingId, setEditingId] = useState<string | null>(null)
+  const [search, setSearch] = useState('')
 
   const load = () => {
     apiFetch('/combos').then(r => r.json()).then(setCombos).catch(console.error)
@@ -38,6 +39,17 @@ export default function Combos() {
   }
 
   useEffect(load, [])
+
+  // Client-side name filter. Matches on name OR the model ids inside its tiers,
+  // so searching a model name surfaces every combo that routes to it.
+  const filteredCombos = combos.filter(c => {
+    const q = search.trim().toLowerCase()
+    if (!q) return true
+    return (
+      c.name.toLowerCase().includes(q) ||
+      c.tiers.some(t => t.toLowerCase().includes(q))
+    )
+  })
 
   const createCombo = async () => {
     if (!newName.trim() || selectedModels.length === 0) return
@@ -119,7 +131,7 @@ export default function Combos() {
       <div className="flex items-start justify-between">
         <div>
           <h1 className="heading-brutal text-3xl uppercase tracking-tight">COMBOS</h1>
-          <p className="text-lg font-medium text-subtext">{combos.length} combos</p>
+          <p className="text-lg font-medium text-subtext">{combos.length} combos{search && ` · ${filteredCombos.length} matching`}</p>
         </div>
         <button onClick={() => {
           setEditingId(null); setNewName(''); setStrategy('fallback'); setSelectedModels([]); setShowCreate(true)
@@ -129,9 +141,28 @@ export default function Combos() {
         </button>
       </div>
 
+      {/* Search — sits above the card grid, below the header. */}
+      <div className="relative">
+        <input
+          type="text"
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          placeholder="Search name or model..."
+          className="w-full border-2 border-line rounded-lg pl-10 pr-3 py-2.5 text-[11px] font-mono placeholder:text-subtext/70 focus:outline-none focus:ring-2 focus:ring-primary bg-surface"
+        />
+        <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-subtext" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+        {search && (
+          <button onClick={() => setSearch('')}
+            className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center rounded text-subtext hover:text-ink transition-all"
+            title="Clear">
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        )}
+      </div>
+
       {/* Combo cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {combos.map(c => (
+        {filteredCombos.map(c => (
           <div key={c.id}
             className={`brutal-card p-5 ${!c.is_active ? 'opacity-60' : ''}`}>
             <div className="flex items-start justify-between mb-3">
@@ -186,6 +217,11 @@ export default function Combos() {
         {combos.length === 0 && (
           <div className="col-span-2 brutal-card border-dashed py-16 text-center text-sm mono-brutal text-subtext">
             No combos yet. Click "+ New Combo" to create one.
+          </div>
+        )}
+        {combos.length > 0 && filteredCombos.length === 0 && (
+          <div className="col-span-2 brutal-card border-dashed py-16 text-center text-sm mono-brutal text-subtext">
+            No combos match "{search}".
           </div>
         )}
       </div>

@@ -10,7 +10,6 @@ export interface SettingsData {
   api_key_header: string
   api_key_prefix: string
   database_url: string
-  proxy_count: number
   keys_count: number
   in_flight: number
 }

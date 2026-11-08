@@ -167,7 +167,7 @@ export default function OAuthConnectModal({ open, provider, onClose, onSuccess }
   const color = provider.color
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" onClick={onClose}>
-      <div className="brutal-card w-full max-w-md" onClick={e => e.stopPropagation()}>
+      <div className="brutal-card w-full max-w-md p-6" onClick={e => e.stopPropagation()}>
         <div className="flex items-center gap-3 mb-5 border-b-2 border-line pb-4">
           {provider.icon_name && <img src={iconUrl(provider.icon_name)} alt="" className="w-8 h-8 rounded-lg object-contain border-2 border-line" style={{ background: `${color}15` }} />}
           <div>
@@ -176,7 +176,7 @@ export default function OAuthConnectModal({ open, provider, onClose, onSuccess }
           </div>
         </div>
 
-        {step === 'loading' && <div className="text-center py-8 mono-brutal text-sm text-subtext animate-pulse">Starting OAuth flow...</div>}
+        {step === 'loading' && <div className="text-center py-10 mono-brutal text-sm text-subtext animate-pulse">Starting OAuth flow...</div>}
 
         {step === 'error' && (
           <div className="space-y-4">
@@ -186,7 +186,7 @@ export default function OAuthConnectModal({ open, provider, onClose, onSuccess }
         )}
 
         {step === 'success' && (
-          <div className="text-center py-8 space-y-4">
+          <div className="text-center py-10 space-y-4">
             <div className="w-12 h-12 mx-auto rounded-full bg-[#3ddc97]/10 border-2 border-[#3ddc97] flex items-center justify-center">
               <svg className="w-6 h-6 text-success-text" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
             </div>
@@ -234,9 +234,9 @@ export default function OAuthConnectModal({ open, provider, onClose, onSuccess }
             <p className="mono-brutal text-sm text-ink">Waiting for device authorization</p>
             <p className="mono-brutal text-[10px] text-subtext">Complete authorization in the opened tab, then return here.</p>
             {deviceData.user_code && (
-              <div className="p-3 rounded-lg bg-[#c8a2ff]/10 border-2 border-[#c8a2ff]">
+              <div className="p-3 rounded-lg bg-[#c8a2ff]/10 border-2 border-[#c8a2ff] overflow-hidden">
                 <p className="mono-brutal text-[9px] text-subtext mb-1">Your code</p>
-                <code className="mono-brutal text-lg font-bold tracking-[0.2em] text-accent-text">{deviceData.user_code}</code>
+                <code className="mono-brutal text-sm font-bold tracking-[0.1em] text-accent-text break-all block">{deviceData.user_code}</code>
               </div>
             )}
             {polling && <p className="mono-brutal text-[9px] text-subtext animate-pulse">Polling...</p>}

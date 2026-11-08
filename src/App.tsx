@@ -11,9 +11,7 @@ import Usage from './pages/Usage'
 import Quota from './pages/Quota'
 import AuthFiles from './pages/AuthFiles'
 import Logs from './pages/Logs'
-import ProxyPool from './pages/ProxyPool'
 import Playground from './pages/Playground'
-import Sources from './pages/Sources'
 import Combos from './pages/Combos'
 import UnslothDetail from './pages/unsloth/UnslothDetail'
 import Login from './pages/Login'
@@ -37,9 +35,7 @@ export default function App() {
             <Route path="/admin/quota" element={<Quota />} />
             <Route path="/admin/auth-files" element={<AuthFiles />} />
             <Route path="/admin/logs" element={<Logs />} />
-            <Route path="/admin/proxy-pool" element={<ProxyPool />} />
             <Route path="/admin/playground" element={<Playground />} />
-            <Route path="/admin/sources" element={<Sources />} />
             <Route path="/admin/combos" element={<Combos />} />
           </Route>
         </Route>

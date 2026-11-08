@@ -24,5 +24,4 @@ export { getAuthFiles, getKeysStats, dedupeKeys } from './auth-files'
 // Unsloth
 export { listUnslothModels, getUnslothModel, createUnslothModel, updateUnslothModel, deleteUnslothModel } from './unsloth'
 export type { UnslothModel } from './unsloth'
-export type { Proxy } from './proxies'
-export { getProxies, createProxy, updateProxy, deleteProxy, toggleProxy } from './proxies'
+
