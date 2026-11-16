@@ -1,6 +1,29 @@
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { iconUrl } from '../api'
 import type { ProviderMeta } from '../api'
+
+function CopyButton({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false)
+  const onCopy = useCallback(async (e: React.MouseEvent) => {
+    e.stopPropagation()
+    try { await navigator.clipboard.writeText(text) } catch {
+      const ta = document.createElement('textarea'); ta.value = text
+      ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta)
+      ta.select(); document.execCommand('copy'); ta.remove()
+    }
+    setCopied(true); setTimeout(() => setCopied(false), 1500)
+  }, [text])
+  return (
+    <button onClick={onCopy} title="Copy model ID"
+      className="shrink-0 p-1 rounded border border-line/50 hover:border-primary hover:bg-primary/10 transition-all text-subtext hover:text-primary">
+      {copied ? (
+        <svg className="w-3 h-3 text-success-text" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+      ) : (
+        <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+      )}
+    </button>
+  )
+}
 
 interface ToggleModel { id: string; owned_by: string; enabled: boolean; toggling?: boolean; context_length?: number | null }
 
@@ -108,9 +131,10 @@ export default function ModelsSection({ providers, models, onToggleModel }: Prop
                       <div className="px-4 py-2 space-y-0.5">
                         {filtered.map(m => (
                           <div key={m.id} className="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-muted transition-all">
-                            <div className="flex items-center gap-2 min-w-0">
+                            <div className="flex items-center gap-2 min-w-0 mr-3">
                               <span className={`text-[11px] font-mono truncate max-w-[220px] ${m.enabled ? 'text-ink/80' : 'text-danger-text/50 line-through'}`}>{m.id}</span>
                               <span className="text-[9px] font-mono text-subtext bg-muted px-1.5 py-0.5 rounded shrink-0">{m.context_length?.toLocaleString() || '?'}</span>
+                              <CopyButton text={m.id} />
                             </div>
                             <button onClick={() => onToggleModel(m.id, !m.enabled)} disabled={m.toggling}
                               className={`relative w-9 h-5 rounded-full transition-all border-2 border-line ${m.enabled ? 'bg-[#3ddc97]' : 'bg-muted'} ${m.toggling ? 'opacity-50' : ''}`}>
