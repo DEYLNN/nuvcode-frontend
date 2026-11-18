@@ -34,6 +34,8 @@ const SCHEMAS: Record<SchemaKey, ImportField[] | string> = {
   'inf:apikey': 'ocf:apikey',
   'kio:apikey': 'ocf:apikey',
   'nos:apikey': 'ocf:apikey',
+  'kenc:apikey': 'ocf:apikey',
+  'or:apikey': 'ocf:apikey',
   'nut:apikey': 'ocf:apikey',
   'sono:apikey': 'ocf:apikey',
   'sop:apikey': 'ocf:apikey',
