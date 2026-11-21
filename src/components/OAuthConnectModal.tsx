@@ -14,19 +14,21 @@ interface OAuthConnectModalProps {
 }
 
 export default function OAuthConnectModal({ open, provider, onClose, onSuccess }: OAuthConnectModalProps) {
-  const [step, setStep] = useState<'loading'|'waiting'|'input'|'success'|'error'>('loading')
+  const [step, setStep] = useState<'loading'|'waiting'|'input'|'manual_key'|'success'|'error'>('loading')
   const [authUrl, setAuthUrl] = useState('')
   const [oauthState, setOauthState] = useState('')
   const [callbackUrl, setCallbackUrl] = useState('')
   const [deviceData, setDeviceData] = useState<any>(null)
   const [error, setError] = useState('')
   const [polling, setPolling] = useState(false)
+  const [manualKey, setManualKey] = useState('')
   const popupRef = useRef<Window | null>(null)
   const pollAbort = useRef(false)
   const processed = useRef(false)
   const onSuccessRef = useRef(onSuccess)
   onSuccessRef.current = onSuccess
   const isDeviceCode = provider?.oauth_flow === 'device_code'
+  const isManualKey = provider?.id === 'cc'
 
   // Start OAuth flow
   useEffect(() => {
@@ -35,6 +37,11 @@ export default function OAuthConnectModal({ open, provider, onClose, onSuccess }
     pollAbort.current = false
     ;(async () => {
       try {
+        if (isManualKey) {
+          // Command Code: direct API key paste, no browser flow
+          setStep('manual_key')
+          return
+        }
         if (isDeviceCode) {
           const r = await apiFetch(`/oauth/${provider.id}/start`)
           const d = await r.json()
@@ -120,6 +127,23 @@ export default function OAuthConnectModal({ open, provider, onClose, onSuccess }
     window.addEventListener('message', handler)
     return () => window.removeEventListener('message', handler)
   }, [step, isDeviceCode, provider, provider?.id, oauthState])
+
+  // Manual API key submit (Command Code)
+  const handleManualKey = async () => {
+    try {
+      const key = manualKey.trim()
+      if (!key) throw new Error('API key is required')
+      setStep('loading')
+      const r = await apiFetch(`/oauth/${provider!.id}/manual`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ apiKey: key }),
+      })
+      const d = await r.json()
+      if (!r.ok || d.success === false) throw new Error(d.error || 'Failed to connect')
+      setStep('success'); onSuccessRef.current()
+    } catch (e: any) { setError(e.message); setStep('error') }
+  }
 
   // Manual submit
   const handleManual = async () => {
@@ -225,6 +249,21 @@ export default function OAuthConnectModal({ open, provider, onClose, onSuccess }
               className="w-full bg-surface border-2 border-line rounded-lg px-3 py-2 text-xs mono-brutal text-ink placeholder:text-subtext/70 focus:outline-none focus:border-[#c8a2ff]" />
             <button onClick={handleManual} disabled={!callbackUrl}
               className="brutal-btn w-full py-2.5 text-xs mono-brutal font-semibold text-white bg-[#ff3d81] hover:bg-[#ff3d81]/80 disabled:opacity-30">Connect</button>
+          </div>
+        )}
+
+        {step === 'manual_key' && (
+          <div className="space-y-4">
+            <div className="p-3 rounded-lg bg-muted border-2 border-line">
+              <p className="mono-brutal text-[10px] text-subtext mb-1">How to get your API key</p>
+              <p className="mono-brutal text-[10px] text-subtext leading-relaxed">Run <code className="text-ink">cmd login</code> in your terminal, then copy the <code className="text-ink">apiKey</code> from <code className="text-ink">~/.commandcode/auth.json</code>. Paste it below.</p>
+            </div>
+            <input type="password" value={manualKey} onChange={e => setManualKey(e.target.value)}
+              placeholder="Paste your Command Code API key..."
+              className="w-full bg-surface border-2 border-line rounded-lg px-3 py-2 text-xs mono-brutal text-ink placeholder:text-subtext/70 focus:outline-none focus:border-[#0066FF]"
+              onKeyDown={e => { if (e.key === 'Enter' && manualKey.trim()) handleManualKey() }} />
+            <button onClick={handleManualKey} disabled={!manualKey.trim()}
+              className="brutal-btn w-full py-2.5 text-xs mono-brutal font-semibold text-white bg-[#0066FF] hover:bg-[#0066FF]/80 disabled:opacity-30">Connect</button>
           </div>
         )}
 

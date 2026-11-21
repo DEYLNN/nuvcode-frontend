@@ -87,6 +87,7 @@ export default function AuthFiles() {
     cf:  { icon: 'cf.png',  color: '#F38020' },
     cl:  { icon: 'cl.png',  color: '#5B9BD5' },
     kc:  { icon: 'kc.png',  color: '#FF6B35' },
+    cc:  { icon: 'cc.svg',  color: '#0066FF' },
   }
 
   const onSearchChange = useCallback((v: string) => {

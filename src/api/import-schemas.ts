@@ -78,6 +78,13 @@ const SCHEMAS: Record<SchemaKey, ImportField[] | string> = {
   ],
   // Codex (auth.openai.com) — access_token + refresh_token (offline_access scope)
   'cx:oauth': 'gb:oauth',
+  // Command Code — static API key (browser hand-off or manual paste)
+  'cc:oauth': [
+    { key: 'provider_id', label: 'Provider ID', required: true },
+    { key: 'key_type', label: 'Key Type', required: true, allowed: ['oauth'] },
+    { key: 'access_token', label: 'API Key', required: true, minLength: 1 },
+    { key: 'label', label: 'Label', required: false },
+  ],
 }
 
 /** Resolve schema: follow alias strings, return ImportField[] or null if unknown */
