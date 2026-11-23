@@ -40,15 +40,11 @@ export default function Combos() {
 
   useEffect(load, [])
 
-  // Client-side name filter. Matches on name OR the model ids inside its tiers,
-  // so searching a model name surfaces every combo that routes to it.
+  // Client-side name filter. Matches on combo name only.
   const filteredCombos = combos.filter(c => {
     const q = search.trim().toLowerCase()
     if (!q) return true
-    return (
-      c.name.toLowerCase().includes(q) ||
-      c.tiers.some(t => t.toLowerCase().includes(q))
-    )
+    return c.name.toLowerCase().includes(q)
   })
 
   const createCombo = async () => {
@@ -147,7 +143,7 @@ export default function Combos() {
           type="text"
           value={search}
           onChange={e => setSearch(e.target.value)}
-          placeholder="Search name or model..."
+          placeholder="Search combo name..."
           className="w-full border-2 border-line rounded-lg pl-10 pr-3 py-2.5 text-[11px] font-mono placeholder:text-subtext/70 focus:outline-none focus:ring-2 focus:ring-primary bg-surface"
         />
         <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-subtext" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
