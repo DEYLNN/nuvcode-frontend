@@ -16,7 +16,18 @@ interface Combo {
 }
 
 interface AllModels {
-  [provider: string]: { id: string; enabled: boolean; owned_by: string }[]
+  [provider: string]: { id: string; enabled: boolean; owned_by: string; context_length?: number | null }[]
+}
+
+/** "1048576" -> "1M", "198000" -> "198K" */
+function fmtCtx(n?: number | null): string {
+  if (!n) return '—'
+  if (n >= 1_000_000) {
+    const m = n / 1_000_000
+    return `${m >= 10 ? Math.round(m) : Number(m.toFixed(1))}M`
+  }
+  if (n >= 1000) return `${Math.round(n / 1000)}K`
+  return String(n)
 }
 
 export default function Combos() {
@@ -33,9 +44,19 @@ export default function Combos() {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [search, setSearch] = useState('')
 
+  // Context length per model id, built from /models/all. Combos only store
+  // model id strings, so ctx has to be looked up from the catalogue.
+  const ctxById: Record<string, number | null> = {}
+  for (const list of Object.values(allModels)) {
+    for (const m of list) ctxById[m.id] = m.context_length ?? null
+  }
+
   const load = () => {
     apiFetch('/combos').then(r => r.json()).then(setCombos).catch(console.error)
     apiFetch('/providers').then(r => r.json()).then(setProviders).catch(console.error)
+    // Load the model catalogue up front so ctx is available on the cards and in
+    // the edit modal without waiting for the picker to be opened.
+    apiFetch('/models/all').then(r => r.json()).then(setAllModels).catch(console.error)
   }
 
   useEffect(load, [])
@@ -201,7 +222,10 @@ export default function Combos() {
                   }`}>
                   <span className={`text-[9px] mono-brutal font-bold uppercase tracking-wider ${
                     i === 0 ? 'text-success-text' : 'text-subtext'}`}>T{i + 1}</span>
-                  <span className="text-[10px] mono-brutal text-ink font-bold">{tier}</span>
+                  <span className="text-[10px] mono-brutal text-ink font-bold flex-1 truncate">{tier}</span>
+                  <span className="text-[9px] mono-brutal text-subtext shrink-0" title="Context window">
+                    {fmtCtx(ctxById[tier])}
+                  </span>
                   {i === 0 && c.strategy === 'fallback' && (
                     <span className="text-[8px] mono-brutal text-success-text font-bold uppercase">PRIMARY</span>
                   )}
@@ -283,6 +307,9 @@ export default function Combos() {
                     </div>
                   )}
                   <span className="text-[10px] mono-brutal text-ink font-bold flex-1 truncate">{prov}/{modelName}</span>
+                  <span className="text-[9px] mono-brutal text-subtext shrink-0 mr-1" title="Context window">
+                    {fmtCtx(ctxById[mid])}
+                  </span>
                   {i === 0 && strategy === 'fallback' && (
                     <span className="text-[7px] mono-brutal font-bold text-success-text uppercase tracking-wider">PRIMARY</span>
                   )}
@@ -363,7 +390,10 @@ export default function Combos() {
                               </svg>}
                             </div>
                             <span className="text-xs mono-brutal text-ink font-bold flex-1">{m.id}</span>
-                            {!m.enabled && <span className="text-[8px] mono-brutal text-danger-text font-bold">disabled</span>}
+                            <span className="text-[9px] mono-brutal text-subtext shrink-0" title="Context window">
+                              {fmtCtx(m.context_length)}
+                            </span>
+                            {!m.enabled && <span className="text-[8px] mono-brutal text-danger-text font-bold ml-1">disabled</span>}
                           </div>
                         )
                       })}
