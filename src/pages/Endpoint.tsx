@@ -453,15 +453,15 @@ export default function Endpoint() {
         </SectionCard>
 
         {/* ─── KEY INJECTION ─── */}
-        <SectionCard color={SECTION_COLORS.injection.bg} title="KEY_INJECTION" badge="POST /admin/api/keys/bulk-add">
+        <SectionCard color={SECTION_COLORS.injection.bg} title="KEY_INJECTION" badge="POST /admin/api/injection/bulk-add">
           <div className="space-y-4">
             <div>
               <span className="text-[10px] mono-brutal text-subtext uppercase tracking-wider font-bold">Endpoint</span>
-              <CodeBlock>{gatewayUrl ? gatewayUrl.replace(/\/v1$/, '') : 'http://IP:PORT'}/admin/api/keys/bulk-add</CodeBlock>
+              <CodeBlock>{gatewayUrl ? gatewayUrl.replace(/\/v1$/, '') : 'http://IP:PORT'}/admin/api/injection/bulk-add</CodeBlock>
             </div>
             <div>
               <span className="text-[10px] mono-brutal text-subtext uppercase tracking-wider font-bold">curl</span>
-              <CodeBlock color="var(--primary-text)">{`curl -X POST {base}/admin/api/keys/bulk-add \\
+              <CodeBlock color="var(--primary-text)">{`curl -X POST {base}/admin/api/injection/bulk-add \\
   -H "Authorization: Bearer ***" \\
   -H "Content-Type: application/json" \\
   -d '{"provider_id":"sop","keys":["sk-xxx","sk-yyy"]}'`}</CodeBlock>
@@ -479,21 +479,21 @@ export default function Endpoint() {
             <div className="border-t-2 border-line pt-4">
               <span className="text-[10px] mono-brutal text-subtext uppercase tracking-wider font-bold">Count keys</span>
               <CodeBlock color="var(--primary-text)">{`curl -H "Authorization: Bearer ***" \\
-  {base}/admin/api/keys/count?provider_id=sop`}</CodeBlock>
+  {base}/admin/api/injection/count?provider_id=sop`}</CodeBlock>
               <CodeBlock color="var(--success-text)">{`{"provider_id":"sop","total":5,"active":5,"disabled":0}`}</CodeBlock>
             </div>
             <div className="border-t-2 border-line pt-4">
               <span className="text-[10px] mono-brutal text-subtext uppercase tracking-wider font-bold">Delete keys</span>
-              <CodeBlock color="var(--danger-text)">{`# delete all
-curl -X POST {base}/admin/api/keys/bulk-delete \\
+              <CodeBlock color="var(--danger-text)">{`# delete only disabled keys (safe)
+curl -X POST {base}/admin/api/injection/bulk-delete \\
   -H "Authorization: Bearer ***" \\
-  -d '{"provider_id":"sop","action":"all"}'
+  -d '{"provider_id":"sop","action":"disabled"}'
 
 # delete by key_value
-curl -X POST {base}/admin/api/keys/bulk-delete \\
+curl -X POST {base}/admin/api/injection/bulk-delete \\
   -H "Authorization: Bearer ***" \\
   -d '{"provider_id":"sop","action":"by_key","key_value":"sk-xxx"}'`}</CodeBlock>
-              <CodeBlock color="var(--success-text)">{`{"deleted":2,"message":"Deleted 2 key(s) from sop"}`}</CodeBlock>
+              <CodeBlock color="var(--success-text)">{`{"deleted":1,"total":2,"disabled":1,"kept_active":1,"message":"Deleted 1 disabled key(s) from sop; 1 active key(s) untouched"}`}</CodeBlock>
             </div>
             <div className="border-t-2 border-line pt-4">
               <span className="text-[10px] mono-brutal text-subtext uppercase tracking-wider font-bold">Docs</span>

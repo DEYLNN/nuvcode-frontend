@@ -11,7 +11,7 @@ export const addKey = (providerId: string, keyValue: string, label: string) =>
     method: 'POST', body: JSON.stringify({ provider_id: providerId, key_value: keyValue, label }),
   })
 export const bulkAddKeys = (providerId: string, keys: string[], label?: string) =>
-  fetcher<{ added: number; duplicates: number; total: number; message: string }>('/keys/bulk-add', {
+  fetcher<{ added: number; duplicates: number; total: number; message: string }>('/injection/bulk-add', {
     method: 'POST', body: JSON.stringify({ provider_id: providerId, keys, label }),
   })
 export const toggleKey = (keyId: string, isActive: boolean) =>
